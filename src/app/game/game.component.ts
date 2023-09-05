@@ -16,9 +16,9 @@ import { ActivatedRoute } from '@angular/router';
 })
 
 export class GameComponent implements OnInit {
-  pickCardAnimation = false;
-  currentCard: string = '';
+  
   game: Game;
+  gameId:string;
 
   item$: Observable<any>;
   firestore: Firestore = inject(Firestore);
@@ -33,8 +33,8 @@ export class GameComponent implements OnInit {
   ngOnInit() {
     this.newGame();
     this.route.params.subscribe((params) => {
-
-      this.item$.subscribe((game:any) => { //subscribe ist abbonnieren , funktion wird nun jedesmal aufgerufen , wenn die daten sich ändern
+      this.gameId = params['id'] ;
+      this.item$.subscribe(() => { //subscribe ist abbonnieren , funktion wird nun jedesmal aufgerufen , wenn die daten sich ändern
         this.getData(params['id']);
         
       });
@@ -51,14 +51,15 @@ export class GameComponent implements OnInit {
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      console.log("Document data:", docSnap.data());
+      // console.log("Document data:", docSnap.data());
       let game = docSnap.data();
       
       this.game.currenPlayer = game['currentPlayer'] ;
       this.game.playedCards = game['playedCards'] ;
       this.game.players = game['players'] ;
       this.game.stack = game['stack'] ;
-      console.log('Players', this.game.players);
+      this.game.pickCardAnimation = game['pickCardAnimation'] ;
+      this.game.currentCard = game['currentCard'] ;
     } else {
       // docSnap.data() will be undefined in this case
       console.log("No such document!");
@@ -72,15 +73,16 @@ export class GameComponent implements OnInit {
   }
 
   pickCard() {
-    if (!this.pickCardAnimation) {
-      this.currentCard = this.game.stack.pop() as string;
-      this.pickCardAnimation = true;
-
+    if (!this.game.pickCardAnimation) {
+      this.game.currentCard = this.game.stack.pop() as string;
+      this.game.pickCardAnimation = true;
       this.game.currenPlayer++;
       this.game.currenPlayer = this.game.currenPlayer % this.game.players.length;
+      this.saveGame() ;
       setTimeout(() => {
-        this.game.playedCards.push(this.currentCard);
-        this.pickCardAnimation = false;
+        this.game.playedCards.push(this.game.currentCard);
+        this.game.pickCardAnimation = false;
+        this.saveGame();
       }, 1000);
 
     }
@@ -92,12 +94,13 @@ export class GameComponent implements OnInit {
     dialogRef.afterClosed().subscribe((name: string) => {
       if (name && name.length > 0) {
         this.game.players.push(name);
+        this.saveGame() ;
       }
     });
   }
 
   async saveGame() {
-    const gameRef = doc(this.firestore, "games", "DC");
+    const gameRef = doc(this.firestore, "games", this.gameId);
 
     await updateDoc(gameRef, (this.game.toJson()));
   }

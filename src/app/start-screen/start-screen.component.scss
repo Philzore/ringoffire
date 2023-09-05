@@ -11,6 +11,10 @@
     img {
         height: 100vh;
     }
+
+    @media (max-width: 960px) {
+        overflow: hidden;
+    }
 }
 
 .start-label-box {
@@ -21,6 +25,8 @@
     display: flex;
     justify-content: center;
 
+    
+
     img {
         width: 20vw;
         height: auto;
@@ -29,5 +35,12 @@
             filter: brightness(1.2);
             cursor: pointer;
         }
+
+        @media (max-width: 960px) {
+            width: 400px;;
+        }
     }
+
+    
 }
+
