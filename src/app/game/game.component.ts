@@ -43,7 +43,6 @@ export class GameComponent implements OnInit {
 
   newGame() {
     this.game = new Game();
-    // this.addToDatabase() ;
   }
 
   async getData(id: string) {
@@ -51,7 +50,6 @@ export class GameComponent implements OnInit {
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      // console.log("Document data:", docSnap.data());
       let game = docSnap.data();
       
       this.game.currenPlayer = game['currentPlayer'] ;
