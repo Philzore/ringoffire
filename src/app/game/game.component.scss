@@ -78,6 +78,24 @@
     }
 }
 
+.game-over {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img {
+        width: 300px;
+    }
+}
+
+app-player,app-player-mobile {
+    cursor: pointer;
+
+    &:hover {
+        filter: brightness(1.25);
+    }
+}
+
 @keyframes pick-card-animation{
     0% {
         transform: scale(1);
